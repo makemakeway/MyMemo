@@ -6,19 +6,29 @@
 //
 
 import UIKit
+import RealmSwift
 
 class MemoListViewController: UIViewController {
 
     
     //MARK: Property
     
+    var localRealm = try! Realm()
+    
+    var tasks: Results<Memo>!
+    
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var addButton: UIBarButtonItem!
     
     
-    
     //MARK: Method
+    func addButtonConfig() {
+        addButton.image = UIImage(systemName: "square.and.pencil")
+        addButton.tintColor = UIColor.orange
+        addButton.title = nil
+    }
+    
     func tableViewConfig() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -43,8 +53,15 @@ class MemoListViewController: UIViewController {
         title = "메모"
     }
     
-    @IBAction func addButtonClicked(_ sender: UIBarButtonItem) {
+    func presentUpdateMemoViewController() {
+        let sb = UIStoryboard(name: "Update", bundle: nil)
+        let vc = sb.instantiateViewController(withIdentifier: "UpdateMemoViewController")
         
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @IBAction func addButtonClicked(_ sender: UIBarButtonItem) {
+        presentUpdateMemoViewController()
     }
     
     
@@ -52,15 +69,20 @@ class MemoListViewController: UIViewController {
     //MARK: LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        tasks = localRealm.objects(Memo.self)
         searchControllerConfig()
         navBarConfig()
         tableViewConfig()
+        addButtonConfig()
+        
+        
     }
     
     
 
 }
 
+//MARK: TableView delegate
 extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MemoTableViewCell.identifier, for: indexPath) as? MemoTableViewCell else {
@@ -71,6 +93,14 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return tasks.count
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
