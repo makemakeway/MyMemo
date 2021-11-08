@@ -6,11 +6,14 @@
 //
 
 import UIKit
+import RealmSwift
 
 class UpdateMemoViewController: UIViewController {
 
     
     //MARK: Property
+    
+    var localRealm = try! Realm()
     
     @IBOutlet weak var textView: UITextView!
     
@@ -25,12 +28,28 @@ class UpdateMemoViewController: UIViewController {
         }
         
         let content = text.components(separatedBy: "\n").filter( { $0.isEmpty == false } )
-        print(content)
+        
+        let title = content[0]
+        let count = content.count
+        
+        var body:String? = nil
+        
+        if count > 1 {
+            body = content[1...count-1].joined(separator: "\n")
+        }
+        
+        try! localRealm.write {
+            localRealm.add(Memo(title: title, content: body, writtenDate: Date(), pinned: false))
+        }
+        
+        print("stored at: \(localRealm.configuration.fileURL)")
+        self.navigationController?.popViewController(animated: true)
     }
     
     func textViewConfig() {
-        textView.text == ""
-        
+        textView.text = ""
+        textView.autocorrectionType = .no
+        textView.autocapitalizationType = .none
     }
     
     func navBarConfig() {

@@ -12,11 +12,13 @@ class Memo: Object {
     @Persisted var title: String
     @Persisted var content: String?
     @Persisted var writtenDate: Date
+    @Persisted var pinned: Bool
     
-    convenience init(title: String, content: String?, writtenDate: Date) {
+    convenience init(title: String, content: String?, writtenDate: Date, pinned: Bool) {
         self.init()
         self.title = title
         self.content = content
         self.writtenDate = writtenDate
+        self.pinned = pinned
     }
 }

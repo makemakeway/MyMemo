@@ -22,6 +22,7 @@
 		FFD327C627393A2D008D5031 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = FFD327C527393A2D008D5031 /* RealmSwift */; };
 		FFD327C927393A52008D5031 /* RealmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327C827393A52008D5031 /* RealmModel.swift */; };
 		FFD327CC27393A99008D5031 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = FFD327CB27393A99008D5031 /* Zip */; };
+		FFD327CF273961B8008D5031 /* Extension+DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		FFD327B927393141008D5031 /* MemoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoTableViewCell.swift; sourceTree = "<group>"; };
 		FFD327BA27393141008D5031 /* MemoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemoTableViewCell.xib; sourceTree = "<group>"; };
 		FFD327C827393A52008D5031 /* RealmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmModel.swift; sourceTree = "<group>"; };
+		FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+DateFormatter.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +145,7 @@
 		FFD327CD27395BBA008D5031 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -234,6 +237,7 @@
 				FFD327BB27393141008D5031 /* MemoTableViewCell.swift in Sources */,
 				FFD327B227391A08008D5031 /* MemoListViewController.swift in Sources */,
 				FFD327B02739197D008D5031 /* MemoModel.swift in Sources */,
+				FFD327CF273961B8008D5031 /* Extension+DateFormatter.swift in Sources */,
 				FFD3279727391779008D5031 /* AppDelegate.swift in Sources */,
 				FFD3279927391779008D5031 /* SceneDelegate.swift in Sources */,
 			);
