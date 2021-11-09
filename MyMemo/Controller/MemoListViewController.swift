@@ -17,6 +17,12 @@ class MemoListViewController: UIViewController {
     
     var tasks: Results<Memo>!
     
+    var memoCount = 0 {
+        didSet {
+            self.title = "\(memoCount)개의 메모"
+        }
+    }
+    
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var addButton: UIBarButtonItem!
@@ -78,6 +84,7 @@ class MemoListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
+        memoCount = tasks.count
     }
     
 
@@ -90,16 +97,45 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-        var data = tasks.filter("pinned == false")[indexPath.row]
+        var data = tasks.sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
         
-        if tableView.numberOfSections > 1 && indexPath.section == 0 {
-            data = tasks.filter("pinned == true")[indexPath.row]
+        if tasks.isEmpty {
+            print("비어있음")
         }
-        
-        cell.titleLabel.text = data.title
+        else if tasks.filter("pinned == false").isEmpty {
+            print("고정된 메모만 있음")
+            data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+        }
+        else if tasks.filter("pinned == true").isEmpty {
+            print("고정 안된 메모만 있음")
+            data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+        }
+        else {
+            print("고정된 메모, 고정 안된 메모 둘 다 있음")
+            if indexPath.section == 0 {
+                data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+            } else {
+                data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+            }
+        }
+            
         cell.titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         
-        cell.contentLabel.text = data.content
+        // 타이틀이 개행문자로 인해 비어있을 경우
+        if data.title.isEmpty {
+            cell.titleLabel.text = "새로운 메모"
+        } else {
+            cell.titleLabel.text = data.title
+        }
+        
+        // 본문의 내용이 없거나, 개행문자로만 이루어져 있는 경우
+        if data.content == nil || data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).isEmpty {
+            cell.contentLabel.text = "추가 텍스트 없음"
+        } else {
+            cell.contentLabel.text = data.content
+        }
+        
+        
         cell.contentLabel.font = UIFont.systemFont(ofSize: 15, weight: .medium)
         cell.contentLabel.textColor = .lightGray
         
@@ -113,20 +149,39 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // 필터된 테이블이 없는 경우
         if tasks.filter("pinned == true").count == 0 {
+            print("DEBUG: 고정된 메모 없음")
             return tasks.count
         }
         // 필터된 테이블이 있고, 0번 섹션인 경우(고정된 메모)
-        else if section == 0 {
+        else if tasks.filter("pinned == true").count != 0 && section == 0 {
+            print("DEBUG: only pixed memo")
             return tasks.filter("pinned == true").count
         }
         // 필터된 테이블이 있고, 1번 섹션인 경우(메모)
-        else {
+        else if tasks.filter("pinned == true").count != 0 && section == 1 {
+            print("DEBUG: only memo")
             return tasks.filter("pinned == false").count
+        } else {
+            print("DEBUG: 내가 생각하지 못한 경우")
+            return tasks.count
         }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return tasks.filter("pinned == true").count == 0 ? 1 : 2
+        // 필터된 값이 없을 경우
+        if tasks.filter("pinned == true").count == 0 {
+            print("DEBUG: 필터된 값 없음. 섹션 1개")
+            return 1
+        }
+        // 필터된 값만 있을 경우(고정된 메모만 있는 case)
+        else if tasks.filter("pinned == true").count != 0 && tasks.filter("pinned == false").count == 0 {
+            print("DEBUG: 필터된 값만 있음. 섹션 1개")
+            return 1
+        }
+        else {
+            print("DEBUG: 섹션 2개")
+            return 2
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -135,35 +190,65 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let pin = UIContextualAction(style: .normal, title: nil) { [weak self](_, _, _) in
-            print("고정")
-            try! self?.localRealm.write {
-                (self?.tasks[indexPath.row])!.pinned.toggle()
-                tableView.reloadData()
+        // 고정된 메모일 경우
+        if indexPath.section == 0 && !(self.tasks.filter("pinned == true").isEmpty) {
+            let pin = UIContextualAction(style: .normal, title: nil) { [weak self](_, _, _) in
+                print("고정")
+                try! self?.localRealm.write {
+                    (self?.tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])!.pinned = true
+                    tableView.reloadData()
+                }
             }
-        }
-        pin.backgroundColor = .orange
-
-        if tableView.numberOfSections > 1 && indexPath.section == 0 {
+            pin.backgroundColor = .orange
             pin.image = UIImage(systemName: "pin.slash.fill")
-        } else {
-            pin.image = UIImage(systemName: "pin.fill")
+            return UISwipeActionsConfiguration(actions: [pin])
         }
-        
-        return UISwipeActionsConfiguration(actions: [pin])
+        // 고정된 메모가 아닐 경우
+        else {
+            let pin = UIContextualAction(style: .normal, title: nil) { [weak self](_, _, _) in
+                print("고정")
+                try! self?.localRealm.write {
+                    (self?.tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])!.pinned = false
+                    tableView.reloadData()
+                }
+            }
+            pin.backgroundColor = .orange
+            pin.image = UIImage(systemName: "pin.fill")
+            return UISwipeActionsConfiguration(actions: [pin])
+        }
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let delete = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, _) in
-            print("삭제")
-            try! self?.localRealm.write {
-                self?.localRealm.delete( (self?.tasks[indexPath.row])! )
-                tableView.reloadData()
-            }
-        }
-        delete.backgroundColor = .red
-        delete.image = UIImage(systemName: "trash")
         
-        return UISwipeActionsConfiguration(actions: [delete])
+        if tableView.numberOfSections > 1 && indexPath.section == 0 {
+            let delete = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, _) in
+                print("삭제")
+                try! self?.localRealm.write {
+                    self?.localRealm.delete( (self?.tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])! )
+                    self?.memoCount -= 1
+                    tableView.reloadData()
+                }
+            }
+            delete.backgroundColor = .red
+            delete.image = UIImage(systemName: "trash")
+            return UISwipeActionsConfiguration(actions: [delete])
+        }
+        else {
+            let delete = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, _) in
+                print("삭제")
+                try! self?.localRealm.write {
+                    self?.localRealm.delete( (self?.tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])! )
+                    self?.memoCount -= 1
+                    tableView.reloadData()
+                }
+            }
+            delete.backgroundColor = .red
+            delete.image = UIImage(systemName: "trash")
+            return UISwipeActionsConfiguration(actions: [delete])
+        }
+        
     }
+    
+    
+    
 }

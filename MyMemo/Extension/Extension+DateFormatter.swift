@@ -9,13 +9,6 @@ import Foundation
 
 
 extension DateFormatter {
-    var df: DateFormatter {
-        let df = DateFormatter()
-        df.locale = Locale(identifier: "ko-KR")
-        df.timeZone = TimeZone(identifier: "KST")
-        return df
-    }
-    
     func dateToString(date: Date) -> String {
         let df = DateFormatter()
         df.locale = Locale(identifier: "ko-KR")
@@ -30,9 +23,6 @@ extension DateFormatter {
         } else {
             df.dateFormat = "yyyy.MM.dd a HH:mm"
         }
-        
-        print(calendar.dateComponents([.day, .weekday], from: date, to: Date()))
-        
         
         return df.string(from: date)
     }

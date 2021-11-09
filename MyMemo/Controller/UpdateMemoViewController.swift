@@ -22,12 +22,14 @@ class UpdateMemoViewController: UIViewController {
     //MARK: Method
     
     func addMemo() {
-        guard let text = textView.text, !text.isEmpty else {
+        guard let text = textView.text, !(text.isEmpty) else {
             print("DEBUG: 텍스트가 비어잇슴")
             return
         }
         
-        let content = text.components(separatedBy: "\n").filter( { $0.isEmpty == false } )
+        let content = text.components(separatedBy: "\n")
+        
+        print(content)
         
         let title = content[0]
         let count = content.count
@@ -38,10 +40,12 @@ class UpdateMemoViewController: UIViewController {
             body = content[1...count-1].joined(separator: "\n")
         }
         
+        print(body?.components(separatedBy: "\n").filter({ $0.isEmpty == false }).isEmpty)
+        
         try! localRealm.write {
             localRealm.add(Memo(title: title, content: body, writtenDate: Date(), pinned: false))
         }
-        
+
         print("stored at: \(localRealm.configuration.fileURL)")
         self.navigationController?.popViewController(animated: true)
     }
