@@ -41,6 +41,7 @@ class MemoListViewController: UIViewController {
         let nib = UINib(nibName: MemoTableViewCell.identifier, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: MemoTableViewCell.identifier)
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.register(MemoHeader.self, forHeaderFooterViewReuseIdentifier: "header")
     }
     
     func searchControllerConfig() {
@@ -195,7 +196,7 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             let pin = UIContextualAction(style: .normal, title: nil) { [weak self](_, _, _) in
                 print("고정")
                 try! self?.localRealm.write {
-                    (self?.tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])!.pinned = true
+                    (self?.tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])!.pinned.toggle()
                     tableView.reloadData()
                 }
             }
@@ -208,7 +209,7 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             let pin = UIContextualAction(style: .normal, title: nil) { [weak self](_, _, _) in
                 print("고정")
                 try! self?.localRealm.write {
-                    (self?.tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])!.pinned = false
+                    (self?.tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])!.pinned.toggle()
                     tableView.reloadData()
                 }
             }
@@ -246,9 +247,43 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             delete.image = UIImage(systemName: "trash")
             return UISwipeActionsConfiguration(actions: [delete])
         }
-        
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header") as? MemoHeader else {
+            return nil
+        }
+        
+        // 고정된 메모일 경우
+        if section == 0 && !(tasks.filter("pinned == true").isEmpty) {
+            header.titleLabel.text = "고정된 메모"
+            header.titleLabel.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
+        }
+        // 고정된 메모가 있고, 일반 메모일 경우
+        else if tableView.numberOfSections == 2 && section == 1 {
+            header.titleLabel.text = "메모"
+            header.titleLabel.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
+        }
+        // 일반 메모만 있을 경우
+        else {
+            return nil
+        }
+        
+        return header
+    }
     
-    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        // 고정된 메모일 경우
+        if section == 0 && !(tasks.filter("pinned == true").isEmpty) {
+            return 40
+        }
+        // 고정된 메모가 있고, 일반 메모일 경우
+        else if tableView.numberOfSections == 2 && section == 1 {
+            return 40
+        }
+        // 일반 메모만 있을 경우
+        else {
+            return 0
+        }
+    }
 }

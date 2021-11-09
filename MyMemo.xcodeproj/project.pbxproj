@@ -23,6 +23,7 @@
 		FFD327C927393A52008D5031 /* RealmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327C827393A52008D5031 /* RealmModel.swift */; };
 		FFD327CC27393A99008D5031 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = FFD327CB27393A99008D5031 /* Zip */; };
 		FFD327CF273961B8008D5031 /* Extension+DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */; };
+		FFD327D3273AA0E9008D5031 /* MemoHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327D2273AA0E9008D5031 /* MemoHeader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 		FFD327BA27393141008D5031 /* MemoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemoTableViewCell.xib; sourceTree = "<group>"; };
 		FFD327C827393A52008D5031 /* RealmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmModel.swift; sourceTree = "<group>"; };
 		FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+DateFormatter.swift"; sourceTree = "<group>"; };
+		FFD327D2273AA0E9008D5031 /* MemoHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoHeader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 			children = (
 				FFD327B927393141008D5031 /* MemoTableViewCell.swift */,
 				FFD327BA27393141008D5031 /* MemoTableViewCell.xib */,
+				FFD327D2273AA0E9008D5031 /* MemoHeader.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -234,6 +237,7 @@
 			files = (
 				FFD327B427391A29008D5031 /* UpdateMemoViewController.swift in Sources */,
 				FFD327C927393A52008D5031 /* RealmModel.swift in Sources */,
+				FFD327D3273AA0E9008D5031 /* MemoHeader.swift in Sources */,
 				FFD327BB27393141008D5031 /* MemoTableViewCell.swift in Sources */,
 				FFD327B227391A08008D5031 /* MemoListViewController.swift in Sources */,
 				FFD327B02739197D008D5031 /* MemoModel.swift in Sources */,
