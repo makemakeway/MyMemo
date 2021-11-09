@@ -57,15 +57,26 @@ class MemoListViewController: UIViewController {
         title = "메모"
     }
     
-    func presentUpdateMemoViewController() {
+    func presentUpdateMemoViewController(memo: Memo?) {
+        
+        guard let memo = memo else {
+            let sb = UIStoryboard(name: "Update", bundle: nil)
+            let vc = sb.instantiateViewController(withIdentifier: "UpdateMemoViewController")
+            self.navigationController?.pushViewController(vc, animated: true)
+            return
+        }
+        
         let sb = UIStoryboard(name: "Update", bundle: nil)
-        let vc = sb.instantiateViewController(withIdentifier: "UpdateMemoViewController")
+        let vc = sb.instantiateViewController(withIdentifier: "UpdateMemoViewController") as! UpdateMemoViewController
+        
+        vc.memo = memo
         
         self.navigationController?.pushViewController(vc, animated: true)
+        return
     }
     
     @IBAction func addButtonClicked(_ sender: UIBarButtonItem) {
-        presentUpdateMemoViewController()
+        presentUpdateMemoViewController(memo: nil)
     }
     
     
@@ -88,6 +99,10 @@ class MemoListViewController: UIViewController {
         memoCount = tasks.count
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        view.layoutIfNeeded()
+    }
 
 }
 
@@ -133,7 +148,8 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
         if data.content == nil || data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).isEmpty {
             cell.contentLabel.text = "추가 텍스트 없음"
         } else {
-            cell.contentLabel.text = data.content
+            let text = data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).first!
+            cell.contentLabel.text = text
         }
         
         
@@ -186,6 +202,15 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 && !(self.tasks.filter("pinned == true").isEmpty) {
+            let data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+            presentUpdateMemoViewController(memo: data)
+        }
+        else {
+            let data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+            presentUpdateMemoViewController(memo: data)
+        }
+        
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -194,7 +219,8 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
         // 고정된 메모일 경우
         if indexPath.section == 0 && !(self.tasks.filter("pinned == true").isEmpty) {
             let pin = UIContextualAction(style: .normal, title: nil) { [weak self](_, _, _) in
-                print("고정")
+                print("고정해제")
+
                 try! self?.localRealm.write {
                     (self?.tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])!.pinned.toggle()
                     tableView.reloadData()
@@ -208,6 +234,13 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
         else {
             let pin = UIContextualAction(style: .normal, title: nil) { [weak self](_, _, _) in
                 print("고정")
+                if (self?.tasks.filter("pinned == true").count)! >= 5 {
+                    let alert = UIAlertController(title: nil, message: "메모는 5개까지만 고정할 수 있습니다.", preferredStyle: .alert)
+                    let ok = UIAlertAction(title: "확인", style: .default, handler: nil)
+                    alert.addAction(ok)
+                    self?.present(alert, animated: true, completion: nil)
+                    return
+                }
                 try! self?.localRealm.write {
                     (self?.tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])!.pinned.toggle()
                     tableView.reloadData()

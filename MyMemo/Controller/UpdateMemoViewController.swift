@@ -15,6 +15,9 @@ class UpdateMemoViewController: UIViewController {
     
     var localRealm = try! Realm()
     
+    var memo: Memo?
+    
+    
     @IBOutlet weak var textView: UITextView!
     
     
@@ -22,6 +25,11 @@ class UpdateMemoViewController: UIViewController {
     //MARK: Method
     
     func addMemo() {
+        if memo != nil && textView.text.isEmpty {
+            // 받아온 데이터가 있는데, textView의 text를 삭제해서 비어있는 경우
+            // 받아온 데이터의 pk로 데이터베이스 값을 찾아서 삭제해야함 지금 졸리니까 내일 구현해야지
+        }
+        
         guard let text = textView.text, !(text.isEmpty) else {
             print("DEBUG: 텍스트가 비어잇슴")
             return
@@ -31,7 +39,7 @@ class UpdateMemoViewController: UIViewController {
         
         print(content)
         
-        let title = content[0]
+        let title = content.filter( {$0.isEmpty == false} ).first ?? ""
         let count = content.count
         
         var body:String? = nil
@@ -39,8 +47,6 @@ class UpdateMemoViewController: UIViewController {
         if count > 1 {
             body = content[1...count-1].joined(separator: "\n")
         }
-        
-        print(body?.components(separatedBy: "\n").filter({ $0.isEmpty == false }).isEmpty)
         
         try! localRealm.write {
             localRealm.add(Memo(title: title, content: body, writtenDate: Date(), pinned: false))
@@ -51,7 +57,6 @@ class UpdateMemoViewController: UIViewController {
     }
     
     func textViewConfig() {
-        textView.text = ""
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
     }
@@ -85,6 +90,9 @@ class UpdateMemoViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.textView.becomeFirstResponder()
+        if let memo = memo {
+            self.textView.text = memo.title + (memo.content ?? "")
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
