@@ -17,15 +17,18 @@ class MemoListViewController: UIViewController {
     
     var tasks: Results<Memo>!
     
+    var filteredTasks: Results<Memo>!
+    
     var memoCount = 0 {
         didSet {
-            self.title = "\(memoCount)개의 메모"
+            self.title = "\(NumberFormatter.numberToString(num: memoCount + 1000))개의 메모"
         }
     }
     
     var searchText = "" {
         didSet {
             if searchText.isEmpty {
+                filteredTasks = nil
                 return
             } else {
                 
@@ -112,7 +115,12 @@ class MemoListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
+        
         memoCount = tasks.count
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
     }
     
     override func viewDidAppear(_ animated: Bool) {

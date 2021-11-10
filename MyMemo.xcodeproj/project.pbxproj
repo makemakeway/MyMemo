@@ -24,6 +24,7 @@
 		FFD327CC27393A99008D5031 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = FFD327CB27393A99008D5031 /* Zip */; };
 		FFD327CF273961B8008D5031 /* Extension+DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */; };
 		FFD327D3273AA0E9008D5031 /* MemoHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327D2273AA0E9008D5031 /* MemoHeader.swift */; };
+		FFDFA6AB273BCE5800D63B25 /* Extension+NumberFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFDFA6AA273BCE5800D63B25 /* Extension+NumberFormatter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 		FFD327C827393A52008D5031 /* RealmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmModel.swift; sourceTree = "<group>"; };
 		FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+DateFormatter.swift"; sourceTree = "<group>"; };
 		FFD327D2273AA0E9008D5031 /* MemoHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoHeader.swift; sourceTree = "<group>"; };
+		FFDFA6AA273BCE5800D63B25 /* Extension+NumberFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+NumberFormatter.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +151,7 @@
 			isa = PBXGroup;
 			children = (
 				FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */,
+				FFDFA6AA273BCE5800D63B25 /* Extension+NumberFormatter.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -240,6 +243,7 @@
 				FFD327D3273AA0E9008D5031 /* MemoHeader.swift in Sources */,
 				FFD327BB27393141008D5031 /* MemoTableViewCell.swift in Sources */,
 				FFD327B227391A08008D5031 /* MemoListViewController.swift in Sources */,
+				FFDFA6AB273BCE5800D63B25 /* Extension+NumberFormatter.swift in Sources */,
 				FFD327B02739197D008D5031 /* MemoModel.swift in Sources */,
 				FFD327CF273961B8008D5031 /* Extension+DateFormatter.swift in Sources */,
 				FFD3279727391779008D5031 /* AppDelegate.swift in Sources */,

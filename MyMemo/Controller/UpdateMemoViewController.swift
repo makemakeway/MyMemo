@@ -50,24 +50,8 @@ class UpdateMemoViewController: UIViewController {
         return result
     }
     
-    func addMemo() {
-        
-        var result = separateTitleAndBody()
-        
-        let title = result.removeFirst()!
-        let body: String? = result.removeFirst()
-        
-        try! localRealm.write {
-            localRealm.add(Memo(title: title, content: body, writtenDate: Date(), pinned: false))
-        }
-        
-        self.navigationController?.popViewController(animated: true)
-    }
-    
     func updateMemo() {
         var result = separateTitleAndBody()
-        
-        
         
         if memo != nil && textView.text.isEmpty {
             // 받아온 데이터가 있고, textView의 text가 비어있는 경우
@@ -145,6 +129,7 @@ class UpdateMemoViewController: UIViewController {
         if let memo = memo {
             self.textView.text = memo.title + "\n" + (memo.content ?? "")
         }
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -158,7 +143,9 @@ class UpdateMemoViewController: UIViewController {
 }
 
 extension UpdateMemoViewController: UITextViewDelegate {
+    
     func textViewDidChange(_ textView: UITextView) {
+        // 텍스트뷰의 값이 바뀌면, 새로 반영을 해야하니까 updated를 false로 설정
         self.updated = false
     }
 }
