@@ -13,6 +13,7 @@ class Memo: Object {
     @Persisted var content: String?
     @Persisted var writtenDate: Date
     @Persisted var pinned: Bool
+    @Persisted(primaryKey: true) var _id: ObjectId
     
     convenience init(title: String, content: String?, writtenDate: Date, pinned: Bool) {
         self.init()

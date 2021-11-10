@@ -16,6 +16,8 @@ class UpdateMemoViewController: UIViewController {
     var localRealm = try! Realm()
     
     var memo: Memo?
+
+    var updated = false
     
     
     @IBOutlet weak var textView: UITextView!
@@ -24,20 +26,13 @@ class UpdateMemoViewController: UIViewController {
     
     //MARK: Method
     
-    func addMemo() {
-        if memo != nil && textView.text.isEmpty {
-            // 받아온 데이터가 있는데, textView의 text를 삭제해서 비어있는 경우
-            // 받아온 데이터의 pk로 데이터베이스 값을 찾아서 삭제해야함 지금 졸리니까 내일 구현해야지
-        }
-        
+    func separateTitleAndBody() -> [String?] {
         guard let text = textView.text, !(text.isEmpty) else {
             print("DEBUG: 텍스트가 비어잇슴")
-            return
+            return []
         }
         
         let content = text.components(separatedBy: "\n")
-        
-        print(content)
         
         let title = content.filter( {$0.isEmpty == false} ).first ?? ""
         let count = content.count
@@ -48,17 +43,72 @@ class UpdateMemoViewController: UIViewController {
             body = content[1...count-1].joined(separator: "\n")
         }
         
+        var result = [String?]()
+        result.append(title)
+        result.append(body)
+        
+        return result
+    }
+    
+    func addMemo() {
+        
+        var result = separateTitleAndBody()
+        
+        let title = result.removeFirst()!
+        let body: String? = result.removeFirst()
+        
         try! localRealm.write {
             localRealm.add(Memo(title: title, content: body, writtenDate: Date(), pinned: false))
         }
-
-        print("stored at: \(localRealm.configuration.fileURL)")
+        
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    func updateMemo() {
+        var result = separateTitleAndBody()
+        
+        
+        
+        if memo != nil && textView.text.isEmpty {
+            // 받아온 데이터가 있고, textView의 text가 비어있는 경우
+            try! localRealm.write {
+                localRealm.delete(memo!)
+            }
+            return
+        }
+        else if memo != nil && !(textView.text.isEmpty) {
+            // 받아온 데이터가 있고, textView의 text가 비어있지 않은 경우
+            
+            let title = result.removeFirst()
+            let body: String? = result.removeFirst()
+            
+            try! localRealm.write {
+                memo!.title = title!
+                memo!.content = body
+                memo!.writtenDate = Date()
+            }
+        }
+        else if memo == nil && !(textView.text.isEmpty) {
+            // 받아온 데이터가 없고, textView의 text가 비어있지 않은 경우
+            
+            let title = result.removeFirst()
+            let body: String? = result.removeFirst()
+            
+            try! localRealm.write {
+                localRealm.add(Memo(title: title!, content: body, writtenDate: Date(), pinned: false))
+            }
+        }
+        else {
+            // 받아온 데이터가 없고, textView의 text가 비어있는 경우
+            return
+        }
+        
     }
     
     func textViewConfig() {
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
+        textView.delegate = self
     }
     
     func navBarConfig() {
@@ -77,7 +127,9 @@ class UpdateMemoViewController: UIViewController {
     
     @objc func completeButtonClicked(_ sender: UIBarButtonItem) {
         print("완료")
-        addMemo()
+        updateMemo()
+        updated = true
+        self.navigationController?.popViewController(animated: true)
     }
     
     //MARK: LifeCycle
@@ -91,13 +143,22 @@ class UpdateMemoViewController: UIViewController {
         super.viewWillAppear(animated)
         self.textView.becomeFirstResponder()
         if let memo = memo {
-            self.textView.text = memo.title + (memo.content ?? "")
+            self.textView.text = memo.title + "\n" + (memo.content ?? "")
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if updated == false {
+            updateMemo()
+        }
         self.textView.resignFirstResponder()
     }
 
+}
+
+extension UpdateMemoViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        self.updated = false
+    }
 }

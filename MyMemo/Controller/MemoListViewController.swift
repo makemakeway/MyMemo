@@ -23,6 +23,17 @@ class MemoListViewController: UIViewController {
         }
     }
     
+    var searchText = "" {
+        didSet {
+            if searchText.isEmpty {
+                return
+            } else {
+                
+            }
+        }
+    }
+    
+    
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var addButton: UIBarButtonItem!
@@ -48,6 +59,11 @@ class MemoListViewController: UIViewController {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.placeholder = "검색"
         searchController.searchBar.image(for: .search, state: .normal)
+        searchController.searchBar.autocorrectionType = .no
+        searchController.searchBar.autocapitalizationType = .none
+        
+        
+        searchController.searchResultsUpdater = self
         
         self.navigationItem.searchController = searchController
     }
@@ -204,10 +220,12 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 && !(self.tasks.filter("pinned == true").isEmpty) {
             let data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+            print("DATA: \(data)")
             presentUpdateMemoViewController(memo: data)
         }
         else {
             let data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+            print("DATA: \(data)")
             presentUpdateMemoViewController(memo: data)
         }
         
@@ -319,4 +337,19 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             return 0
         }
     }
+}
+
+
+//MARK: SearchController extension
+
+extension MemoListViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let text = searchController.searchBar.text?.lowercased(), !(text.isEmpty) else {
+            return
+        }
+        
+        self.searchText = text
+    }
+    
+    
 }
