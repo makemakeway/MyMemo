@@ -21,17 +21,20 @@ class MemoListViewController: UIViewController {
     
     var memoCount = 0 {
         didSet {
-            self.title = "\(NumberFormatter.numberToString(num: memoCount + 1000))개의 메모"
+            self.title = "\(NumberFormatter.numberToString(num: memoCount))개의 메모"
         }
     }
     
     var searchText = "" {
         didSet {
+            print(searchText)
             if searchText.isEmpty {
-                filteredTasks = nil
+                self.tasks = localRealm.objects(Memo.self)
+                tableView.reloadData()
                 return
             } else {
-                
+                self.tasks = localRealm.objects(Memo.self).filter("title CONTAINS[c] '\(searchText)' OR content CONTAINS[c] '\(searchText)'")
+                tableView.reloadData()
             }
         }
     }
@@ -126,6 +129,7 @@ class MemoListViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         view.layoutIfNeeded()
+        self.navigationItem.searchController?.searchBar.layoutIfNeeded()
     }
 
 }
@@ -352,7 +356,7 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension MemoListViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard let text = searchController.searchBar.text?.lowercased(), !(text.isEmpty) else {
+        guard let text = searchController.searchBar.text?.lowercased() else {
             return
         }
         
