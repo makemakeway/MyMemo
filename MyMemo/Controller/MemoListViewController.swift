@@ -111,8 +111,6 @@ class MemoListViewController: UIViewController {
         navBarConfig()
         tableViewConfig()
         addButtonConfig()
-        
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -122,15 +120,26 @@ class MemoListViewController: UIViewController {
         memoCount = tasks.count
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidLayoutSubviews() {
+        if Core.shared.isNewUser() {
+            // 첫 화면 보여주기
+            let sb = UIStoryboard.init(name: "Tutorial", bundle: nil)
+            let vc = sb.instantiateViewController(withIdentifier: "TutorialViewController") as! TutorialViewController
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: true, completion: nil)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         view.layoutIfNeeded()
-        self.navigationItem.searchController?.searchBar.layoutIfNeeded()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+    
+    
 
 }
 

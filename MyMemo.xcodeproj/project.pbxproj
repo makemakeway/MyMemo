@@ -21,10 +21,12 @@
 		FFD327C427393A2D008D5031 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = FFD327C327393A2D008D5031 /* Realm */; };
 		FFD327C627393A2D008D5031 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = FFD327C527393A2D008D5031 /* RealmSwift */; };
 		FFD327C927393A52008D5031 /* RealmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327C827393A52008D5031 /* RealmModel.swift */; };
-		FFD327CC27393A99008D5031 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = FFD327CB27393A99008D5031 /* Zip */; };
 		FFD327CF273961B8008D5031 /* Extension+DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */; };
 		FFD327D3273AA0E9008D5031 /* MemoHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFD327D2273AA0E9008D5031 /* MemoHeader.swift */; };
 		FFDFA6AB273BCE5800D63B25 /* Extension+NumberFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFDFA6AA273BCE5800D63B25 /* Extension+NumberFormatter.swift */; };
+		FFDFA6AE273D431D00D63B25 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFDFA6AD273D431D00D63B25 /* Core.swift */; };
+		FFDFA6B0273D448200D63B25 /* TutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFDFA6AF273D448200D63B25 /* TutorialViewController.swift */; };
+		FFDFA6B2273D449500D63B25 /* Tutorial.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FFDFA6B1273D449500D63B25 /* Tutorial.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +47,9 @@
 		FFD327CE273961B8008D5031 /* Extension+DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+DateFormatter.swift"; sourceTree = "<group>"; };
 		FFD327D2273AA0E9008D5031 /* MemoHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoHeader.swift; sourceTree = "<group>"; };
 		FFDFA6AA273BCE5800D63B25 /* Extension+NumberFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+NumberFormatter.swift"; sourceTree = "<group>"; };
+		FFDFA6AD273D431D00D63B25 /* Core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
+		FFDFA6AF273D448200D63B25 /* TutorialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialViewController.swift; sourceTree = "<group>"; };
+		FFDFA6B1273D449500D63B25 /* Tutorial.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Tutorial.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +57,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FFD327CC27393A99008D5031 /* Zip in Frameworks */,
 				FFD327C627393A2D008D5031 /* RealmSwift in Frameworks */,
 				FFD327C427393A2D008D5031 /* Realm in Frameworks */,
 			);
@@ -80,6 +84,7 @@
 		FFD3279527391779008D5031 /* MyMemo */ = {
 			isa = PBXGroup;
 			children = (
+				FFDFA6AC273D431500D63B25 /* Util */,
 				FFD327CD27395BBA008D5031 /* Extension */,
 				FFD327C727393A43008D5031 /* Realm */,
 				FFD327AE27391969008D5031 /* Model */,
@@ -107,6 +112,7 @@
 			children = (
 				FFD327B127391A08008D5031 /* MemoListViewController.swift */,
 				FFD327B327391A29008D5031 /* UpdateMemoViewController.swift */,
+				FFDFA6AF273D448200D63B25 /* TutorialViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -127,6 +133,7 @@
 				FFD3279C27391779008D5031 /* Main.storyboard */,
 				FFD327A12739177C008D5031 /* LaunchScreen.storyboard */,
 				FFD327B527391A87008D5031 /* Update.storyboard */,
+				FFDFA6B1273D449500D63B25 /* Tutorial.storyboard */,
 			);
 			path = Storyboard;
 			sourceTree = "<group>";
@@ -156,6 +163,14 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
+		FFDFA6AC273D431500D63B25 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				FFDFA6AD273D431D00D63B25 /* Core.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -175,7 +190,6 @@
 			packageProductDependencies = (
 				FFD327C327393A2D008D5031 /* Realm */,
 				FFD327C527393A2D008D5031 /* RealmSwift */,
-				FFD327CB27393A99008D5031 /* Zip */,
 			);
 			productName = MyMemo;
 			productReference = FFD3279327391779008D5031 /* MyMemo.app */;
@@ -207,7 +221,6 @@
 			mainGroup = FFD3278A27391779008D5031;
 			packageReferences = (
 				FFD327C227393A2D008D5031 /* XCRemoteSwiftPackageReference "realm-cocoa" */,
-				FFD327CA27393A98008D5031 /* XCRemoteSwiftPackageReference "Zip" */,
 			);
 			productRefGroup = FFD3279427391779008D5031 /* Products */;
 			projectDirPath = "";
@@ -227,6 +240,7 @@
 				FFD327A02739177C008D5031 /* Assets.xcassets in Resources */,
 				FFD3279E27391779008D5031 /* Main.storyboard in Resources */,
 				FFD327B627391A87008D5031 /* Update.storyboard in Resources */,
+				FFDFA6B2273D449500D63B25 /* Tutorial.storyboard in Resources */,
 				FFD327BC27393141008D5031 /* MemoTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -241,12 +255,14 @@
 				FFD327B427391A29008D5031 /* UpdateMemoViewController.swift in Sources */,
 				FFD327C927393A52008D5031 /* RealmModel.swift in Sources */,
 				FFD327D3273AA0E9008D5031 /* MemoHeader.swift in Sources */,
+				FFDFA6AE273D431D00D63B25 /* Core.swift in Sources */,
 				FFD327BB27393141008D5031 /* MemoTableViewCell.swift in Sources */,
 				FFD327B227391A08008D5031 /* MemoListViewController.swift in Sources */,
 				FFDFA6AB273BCE5800D63B25 /* Extension+NumberFormatter.swift in Sources */,
 				FFD327B02739197D008D5031 /* MemoModel.swift in Sources */,
 				FFD327CF273961B8008D5031 /* Extension+DateFormatter.swift in Sources */,
 				FFD3279727391779008D5031 /* AppDelegate.swift in Sources */,
+				FFDFA6B0273D448200D63B25 /* TutorialViewController.swift in Sources */,
 				FFD3279927391779008D5031 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -479,14 +495,6 @@
 				version = 10.18.0;
 			};
 		};
-		FFD327CA27393A98008D5031 /* XCRemoteSwiftPackageReference "Zip" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/marmelroy/Zip.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -499,11 +507,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FFD327C227393A2D008D5031 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
 			productName = RealmSwift;
-		};
-		FFD327CB27393A99008D5031 /* Zip */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = FFD327CA27393A98008D5031 /* XCRemoteSwiftPackageReference "Zip" */;
-			productName = Zip;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
