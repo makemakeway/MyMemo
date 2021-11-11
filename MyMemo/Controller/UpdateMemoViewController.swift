@@ -7,6 +7,7 @@
 
 import UIKit
 import RealmSwift
+import Zip
 
 class UpdateMemoViewController: UIViewController {
 
@@ -92,6 +93,7 @@ class UpdateMemoViewController: UIViewController {
     func textViewConfig() {
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
+        textView.font = UIFont.systemFont(ofSize: 20, weight: .medium)
         textView.delegate = self
     }
     
@@ -103,10 +105,30 @@ class UpdateMemoViewController: UIViewController {
         self.navigationItem.rightBarButtonItems = [completeButton, shareButton]
     }
     
+    func presentActivityController(sharedObject: [String]) {
+        let activityViewController = UIActivityViewController(activityItems: sharedObject, applicationActivities: [])
+        
+        
+        self.present(activityViewController, animated: true, completion: nil)
+    }
+    
     
     //MARK: Objc Method
     @objc func shareButtonClicked(_ sender: UIBarButtonItem) {
         print("공유")
+        
+        if textView.text.isEmpty {
+            let alert = UIAlertController(title: nil, message: "공유할 내용이 없습니다.", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alert.addAction(ok)
+            present(alert, animated: true, completion: nil)
+        }
+        
+        var shared = [String]()
+        
+        shared.append(textView.text)
+        
+        presentActivityController(sharedObject: shared)
     }
     
     @objc func completeButtonClicked(_ sender: UIBarButtonItem) {
