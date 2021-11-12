@@ -19,6 +19,8 @@ class UpdateMemoViewController: UIViewController {
 
     var updated = false
     
+    var searchText: UILabel? = nil
+    
     
     @IBOutlet weak var textView: UITextView!
     

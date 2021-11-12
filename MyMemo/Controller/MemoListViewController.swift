@@ -66,6 +66,7 @@ class MemoListViewController: UIViewController {
         searchController.searchBar.autocapitalizationType = .none
         
         searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
         
         self.navigationItem.searchController = searchController
     }
@@ -169,24 +170,7 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             }
         }
         
-            
         cell.titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-        
-        // 타이틀이 개행문자로 인해 비어있을 경우
-        if data.title.isEmpty {
-            cell.titleLabel.text = "새로운 메모"
-        } else {
-            cell.titleLabel.text = data.title
-        }
-        
-        // 본문의 내용이 없거나, 개행문자로만 이루어져 있는 경우
-        if data.content == nil || data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).isEmpty {
-            cell.contentLabel.text = "추가 텍스트 없음"
-        } else {
-            let text = data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).first!
-            cell.contentLabel.text = text
-        }
-        
         
         cell.contentLabel.font = UIFont.systemFont(ofSize: 15, weight: .medium)
         cell.contentLabel.textColor = .lightGray
@@ -194,6 +178,52 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
         cell.dateLabel.text = DateFormatter().dateToString(date: data.writtenDate)
         cell.dateLabel.font = UIFont.systemFont(ofSize: 15, weight: .medium)
         cell.dateLabel.textColor = .lightGray
+        
+        
+        // 타이틀이 개행문자로 인해 비어있을 경우
+        if data.title.isEmpty {
+            cell.titleLabel.text = "새로운 메모"
+        } else {
+            // 검색하고 있는 경우
+            if !(searchText.isEmpty) {
+                let attStr = NSMutableAttributedString(string: data.title)
+                
+                attStr.addAttribute(.foregroundColor, value: UIColor.orange, range: (data.title as NSString).range(of: searchText))
+                
+                cell.titleLabel.attributedText = attStr
+            }
+            else {
+                cell.titleLabel.text = data.title
+            }
+            
+        }
+        
+        // 본문의 내용이 없거나, 개행문자로만 이루어져 있는 경우
+        if data.content == nil || data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).isEmpty {
+            cell.contentLabel.text = "추가 텍스트 없음"
+        } else {
+            if !(searchText.isEmpty) {
+                let text = data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).joined(separator: "")
+                
+                print("text: \(text)")
+                
+                let attStr = NSMutableAttributedString(string: text)
+                
+                print("attStr = \(attStr)")
+                
+                attStr.addAttribute(.foregroundColor, value: UIColor.orange, range: (text as NSString).range(of: searchText))
+                
+                cell.contentLabel.attributedText = attStr
+            }
+            else {
+                let text = data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).first!
+                cell.contentLabel.text = text
+            }
+            
+        }
+        
+
+        
         
         return cell
     }
@@ -319,6 +349,7 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
         return true
     }
     
+
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         // 고정된 메모
@@ -394,12 +425,18 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             }
         }
     }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        print("스크롤")
+        self.navigationItem.searchController?.searchBar.resignFirstResponder()
+    }
+    
 }
 
 
 //MARK: SearchController extension
 
-extension MemoListViewController: UISearchResultsUpdating {
+extension MemoListViewController: UISearchResultsUpdating, UISearchBarDelegate {
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text?.lowercased() else {
             return
@@ -408,5 +445,7 @@ extension MemoListViewController: UISearchResultsUpdating {
         self.searchText = text
     }
     
-    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
 }
