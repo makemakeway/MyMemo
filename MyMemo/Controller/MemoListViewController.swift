@@ -15,11 +15,7 @@ class MemoListViewController: UIViewController {
     
     var localRealm = try! Realm()
     
-    var tasks: Results<Memo>! {
-        didSet {
-            print("Tasks: \(tasks)")
-        }
-    }
+    var tasks: Results<Memo>!
     
     var memoCount = 0 {
         didSet {
@@ -199,14 +195,16 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
         } else {
             // 검색하고 있는 경우
             if !(searchText.isEmpty) {
-                let attStr = NSMutableAttributedString(string: data.title)
+                let title = data.title.components(separatedBy: "\n").filter({ $0.isEmpty == false }).first!
                 
-                attStr.addAttribute(.foregroundColor, value: UIColor.orange, range: (data.title as NSString).range(of: searchText))
+                let attStr = NSMutableAttributedString(string: title)
+                
+                attStr.addAttribute(.foregroundColor, value: UIColor.orange, range: (title as NSString).range(of: searchText))
                 
                 cell.titleLabel.attributedText = attStr
             }
             else {
-                cell.titleLabel.text = data.title
+                cell.titleLabel.text = data.title.components(separatedBy: "\n").filter({ $0.isEmpty == false }).first!
             }
             
         }
@@ -283,17 +281,14 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
         if !(searchText.isEmpty) {
             let data = tasks.sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
             presentUpdateMemoViewController(memo: data)
-            print("DATA0: \(data)")
         }
         else {
             if indexPath.section == 0 && !(self.tasks.filter("pinned == true").isEmpty) {
                 let data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
-                print("DATA1: \(data)")
                 presentUpdateMemoViewController(memo: data)
             }
             else {
                 let data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
-                print("DATA2: \(data)")
                 presentUpdateMemoViewController(memo: data)
             }
         }

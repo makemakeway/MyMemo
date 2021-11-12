@@ -38,16 +38,30 @@ class UpdateMemoViewController: UIViewController {
         
         print("content: \(content)")
         
-        let title = content.filter( {$0.isEmpty == false }).first ?? ""
-        let count = content.count
+        var title = ""
         
+        var titleIndex = 0
         
+        for (index, text) in content.enumerated() {
+            if !(text.isEmpty) {
+                title = text
+                titleIndex = index
+                break
+            }
+        }
+        
+        title = String(repeating: "\n", count: titleIndex) + title
         
         var body:String? = nil
         
-        if count > 1 {
-            body = content[1...count-1].joined(separator: "\n")
+        let bodyIndex = titleIndex + 1
+        
+        
+        if content.count > bodyIndex {
+            body = content[bodyIndex...].joined(separator: "\n")
         }
+        
+        print(title, body)
         
         var result = [String?]()
         result.append(title)
