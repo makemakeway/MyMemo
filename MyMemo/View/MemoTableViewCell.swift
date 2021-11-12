@@ -22,6 +22,17 @@ class MemoTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        titleLabel.textColor = UIColor.label
+        contentLabel.textColor = UIColor.lightGray
+        
+        titleLabel.text = ""
+        contentLabel.text = nil
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -71,6 +71,7 @@ class MemoListViewController: UIViewController {
         searchController.searchBar.delegate = self
         searchController.delegate = self
         
+        
         self.navigationItem.searchController = searchController
     }
     
@@ -202,6 +203,8 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
                 attStr.addAttribute(.foregroundColor, value: UIColor.orange, range: (title as NSString).range(of: searchText))
                 
                 cell.titleLabel.attributedText = attStr
+                
+                print("debug: \(attStr)")
             }
             else {
                 cell.titleLabel.text = data.title.components(separatedBy: "\n").filter({ $0.isEmpty == false }).first!
@@ -214,7 +217,7 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             cell.contentLabel.text = "추가 텍스트 없음"
         } else {
             if !(searchText.isEmpty) {
-                let text = data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).joined(separator: "")
+                let text = data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).joined(separator: "\n")
                 
                 let attStr = NSMutableAttributedString(string: text)
                 
@@ -476,4 +479,6 @@ extension MemoListViewController: UISearchResultsUpdating, UISearchBarDelegate, 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searching = false
     }
+    
+    
 }
