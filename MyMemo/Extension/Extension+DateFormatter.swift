@@ -15,10 +15,11 @@ extension DateFormatter {
         df.timeZone = TimeZone(identifier: "KST")
         
         let calendar = Calendar.current
+        let components = calendar.dateComponents([.day, .weekday], from: date, to: Date())
         
         if calendar.isDateInToday(date) {
             df.dateFormat = "a hh:mm"
-        } else if calendar.dateComponents([.weekday], from: date, to: Date()).weekday! < 7 {
+        } else if components.day! < 7 {
             df.dateFormat = "EEEE"
         } else {
             df.dateFormat = "yyyy.MM.dd a HH:mm"

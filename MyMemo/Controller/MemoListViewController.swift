@@ -17,8 +17,6 @@ class MemoListViewController: UIViewController {
     
     var tasks: Results<Memo>!
     
-    var filteredTasks: Results<Memo>!
-    
     var memoCount = 0 {
         didSet {
             self.title = "\(NumberFormatter.numberToString(num: memoCount))개의 메모"
@@ -38,7 +36,6 @@ class MemoListViewController: UIViewController {
             }
         }
     }
-    
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -67,7 +64,6 @@ class MemoListViewController: UIViewController {
         searchController.searchBar.image(for: .search, state: .normal)
         searchController.searchBar.autocorrectionType = .no
         searchController.searchBar.autocapitalizationType = .none
-        
         
         searchController.searchResultsUpdater = self
         
@@ -132,11 +128,7 @@ class MemoListViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        view.layoutIfNeeded()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+        tableView.layoutIfNeeded()
     }
     
     
@@ -152,25 +144,31 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
         
         var data = tasks.sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
         
-        if tasks.isEmpty {
-            print("비어있음")
-        }
-        else if tasks.filter("pinned == false").isEmpty {
-            print("고정된 메모만 있음")
-            data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
-        }
-        else if tasks.filter("pinned == true").isEmpty {
-            print("고정 안된 메모만 있음")
-            data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+        if !(searchText.isEmpty) {
+            data = tasks.sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
         }
         else {
-            print("고정된 메모, 고정 안된 메모 둘 다 있음")
-            if indexPath.section == 0 {
+            if tasks.isEmpty {
+                print("비어있음")
+            }
+            else if tasks.filter("pinned == false").isEmpty {
+                print("고정된 메모만 있음")
                 data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
-            } else {
+            }
+            else if tasks.filter("pinned == true").isEmpty {
+                print("고정 안된 메모만 있음")
                 data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
             }
+            else {
+                print("고정된 메모, 고정 안된 메모 둘 다 있음")
+                if indexPath.section == 0 {
+                    data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+                } else {
+                    data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+                }
+            }
         }
+        
             
         cell.titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         
@@ -201,39 +199,43 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // 필터된 테이블이 없는 경우
-        if tasks.filter("pinned == true").count == 0 {
-            print("DEBUG: 고정된 메모 없음")
+        if !(searchText.isEmpty) {
             return tasks.count
         }
-        // 필터된 테이블이 있고, 0번 섹션인 경우(고정된 메모)
-        else if tasks.filter("pinned == true").count != 0 && section == 0 {
-            print("DEBUG: only pixed memo")
-            return tasks.filter("pinned == true").count
+        else {
+            // 필터된 테이블이 없는 경우
+            if tasks.filter("pinned == true").count == 0 {
+                print("DEBUG: 고정된 메모 없음")
+                return tasks.count
+            }
+            // 필터된 테이블이 있고, 0번 섹션인 경우(고정된 메모)
+            else if tasks.filter("pinned == true").count != 0 && section == 0 {
+                print("DEBUG: only pixed memo")
+                return tasks.filter("pinned == true").count
+            }
+            // 필터된 테이블이 있고, 1번 섹션인 경우(메모)
+            else if tasks.filter("pinned == true").count != 0 && section == 1 {
+                print("DEBUG: only memo")
+                return tasks.filter("pinned == false").count
+            } else {
+                print("DEBUG: 내가 생각하지 못한 경우")
+                return tasks.count
+            }
         }
-        // 필터된 테이블이 있고, 1번 섹션인 경우(메모)
-        else if tasks.filter("pinned == true").count != 0 && section == 1 {
-            print("DEBUG: only memo")
-            return tasks.filter("pinned == false").count
-        } else {
-            print("DEBUG: 내가 생각하지 못한 경우")
-            return tasks.count
-        }
+        
+        
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
         // 필터된 값이 없을 경우
-        if tasks.filter("pinned == true").count == 0 {
-            print("DEBUG: 필터된 값 없음. 섹션 1개")
+        if tasks.filter("pinned == true").count == 0 || !(searchText.isEmpty) {
             return 1
         }
         // 필터된 값만 있을 경우(고정된 메모만 있는 case)
         else if tasks.filter("pinned == true").count != 0 && tasks.filter("pinned == false").count == 0 {
-            print("DEBUG: 필터된 값만 있음. 섹션 1개")
             return 1
         }
         else {
-            print("DEBUG: 섹션 2개")
             return 2
         }
     }
@@ -241,15 +243,13 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 && !(self.tasks.filter("pinned == true").isEmpty) {
             let data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
-            print("DATA: \(data)")
             presentUpdateMemoViewController(memo: data)
         }
         else {
             let data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
-            print("DATA: \(data)")
             presentUpdateMemoViewController(memo: data)
         }
-        
+
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -291,31 +291,53 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func isPinned(indexPath: IndexPath) -> Bool {
         
-        if tableView.numberOfSections > 1 && indexPath.section == 0 {
-            let delete = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, _) in
-                print("삭제")
-                try! self?.localRealm.write {
-                    self?.localRealm.delete( (self?.tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])! )
-                    self?.memoCount -= 1
-                    tableView.reloadData()
-                }
+        if !(self.tasks.filter("pinned == true").isEmpty) && indexPath.section == 0 {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func deleteMemoData(state: String, indexPath: IndexPath) {
+        let alert = UIAlertController(title: nil, message: "메모를 삭제하시겠습니까?", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "예", style: .default) { _ in
+            try! self.localRealm.write {
+                self.localRealm.delete( (self.tasks.filter("pinned == \(state)").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]) )
+                self.memoCount -= 1
+                self.tableView.reloadData()
             }
-            delete.backgroundColor = .red
+        }
+        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        alert.addAction(cancel)
+        alert.addAction(ok)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        // 고정된 메모
+        if isPinned(indexPath: indexPath) {
+            let delete = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
+                
+                self?.deleteMemoData(state: "true", indexPath: indexPath)
+                completion(true)
+            }
             delete.image = UIImage(systemName: "trash")
             return UISwipeActionsConfiguration(actions: [delete])
         }
+        // 일반 메모
         else {
-            let delete = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, _) in
-                print("삭제")
-                try! self?.localRealm.write {
-                    self?.localRealm.delete( (self?.tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row])! )
-                    self?.memoCount -= 1
-                    tableView.reloadData()
-                }
+            let delete = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
+                
+                self?.deleteMemoData(state: "false", indexPath: indexPath)
+                completion(true)
             }
-            delete.backgroundColor = .red
             delete.image = UIImage(systemName: "trash")
             return UISwipeActionsConfiguration(actions: [delete])
         }
@@ -326,36 +348,50 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             return nil
         }
         
-        // 고정된 메모일 경우
-        if section == 0 && !(tasks.filter("pinned == true").isEmpty) {
-            header.titleLabel.text = "고정된 메모"
-            header.titleLabel.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
+        if !(searchText.isEmpty) {
+            if self.tasks.count != 0 {
+                header.titleLabel.text = "\(self.tasks.count)개 찾음"
+            }
+            else {
+                header.titleLabel.text = "일치하는 항목이 없습니다."
+            }
         }
-        // 고정된 메모가 있고, 일반 메모일 경우
-        else if tableView.numberOfSections == 2 && section == 1 {
-            header.titleLabel.text = "메모"
-            header.titleLabel.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
-        }
-        // 일반 메모만 있을 경우
         else {
-            return nil
+            // 고정된 메모일 경우
+            if section == 0 && !(tasks.filter("pinned == true").isEmpty) {
+                header.titleLabel.text = "고정된 메모"
+            }
+            // 고정된 메모가 있고, 일반 메모일 경우
+            else if tableView.numberOfSections == 2 && section == 1 {
+                header.titleLabel.text = "메모"
+            }
+            // 일반 메모만 있을 경우
+            else {
+                return nil
+            }
         }
         
         return header
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        // 고정된 메모일 경우
-        if section == 0 && !(tasks.filter("pinned == true").isEmpty) {
+        
+        if !(searchText.isEmpty) {
             return 40
         }
-        // 고정된 메모가 있고, 일반 메모일 경우
-        else if tableView.numberOfSections == 2 && section == 1 {
-            return 40
-        }
-        // 일반 메모만 있을 경우
         else {
-            return 0
+            // 고정된 메모일 경우
+            if section == 0 && !(tasks.filter("pinned == true").isEmpty) {
+                return 40
+            }
+            // 고정된 메모가 있고, 일반 메모일 경우
+            else if tableView.numberOfSections == 2 && section == 1 {
+                return 40
+            }
+            // 일반 메모만 있을 경우
+            else {
+                return 0
+            }
         }
     }
 }

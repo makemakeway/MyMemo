@@ -20,10 +20,25 @@ class TutorialViewController: UIViewController {
     //MARK: Method
     
     func okButtonConfig() {
-        okButton.layer.cornerRadius = 10
-        okButton.backgroundColor = .orange
-        okButton.tintColor = .white
-        okButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        if #available(iOS 15.0, *) {
+            var config = UIButton.Configuration.filled()
+            var attText = AttributedString("확인")
+            attText.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+            
+            config.cornerStyle = .dynamic
+            config.baseBackgroundColor = .orange
+            config.baseForegroundColor = .white
+            config.attributedTitle = attText
+            
+            
+            okButton.configuration = config
+        } else {
+            okButton.layer.cornerRadius = 10
+            okButton.backgroundColor = .orange
+            okButton.tintColor = .white
+            okButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        }
+        
     }
     
     func contentViewConfig() {

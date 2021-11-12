@@ -16,6 +16,7 @@ class MemoHeader: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         contentView.addSubview(titleLabel)
+        titleLabel.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
     }
     
     required init?(coder: NSCoder) {
