@@ -36,8 +36,12 @@ class UpdateMemoViewController: UIViewController {
         
         let content = text.components(separatedBy: "\n")
         
-        let title = content.filter( {$0.isEmpty == false} ).first ?? ""
+        print("content: \(content)")
+        
+        let title = content.filter( {$0.isEmpty == false }).first ?? ""
         let count = content.count
+        
+        
         
         var body:String? = nil
         

@@ -15,13 +15,19 @@ class MemoListViewController: UIViewController {
     
     var localRealm = try! Realm()
     
-    var tasks: Results<Memo>!
+    var tasks: Results<Memo>! {
+        didSet {
+            print("Tasks: \(tasks)")
+        }
+    }
     
     var memoCount = 0 {
         didSet {
             self.title = "\(NumberFormatter.numberToString(num: memoCount))개의 메모"
         }
     }
+    
+    var searching = false
     
     var searchText = "" {
         didSet {
@@ -67,6 +73,7 @@ class MemoListViewController: UIViewController {
         
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
+        searchController.delegate = self
         
         self.navigationItem.searchController = searchController
     }
@@ -89,6 +96,12 @@ class MemoListViewController: UIViewController {
         let vc = sb.instantiateViewController(withIdentifier: "UpdateMemoViewController") as! UpdateMemoViewController
         
         vc.memo = memo
+        
+        if !(searchText.isEmpty) || searching {
+            self.navigationItem.backButtonTitle = "검색"
+        } else {
+            self.navigationItem.backButtonTitle = "\(NumberFormatter.numberToString(num: memoCount))개의 메모"
+        }
         
         self.navigationController?.pushViewController(vc, animated: true)
         return
@@ -114,7 +127,7 @@ class MemoListViewController: UIViewController {
         super.viewWillAppear(animated)
         tableView.reloadData()
         
-        memoCount = tasks.count
+        self.memoCount = localRealm.objects(Memo.self).count
     }
     
     override func viewDidLayoutSubviews() {
@@ -205,11 +218,7 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
             if !(searchText.isEmpty) {
                 let text = data.content!.components(separatedBy: "\n").filter({ $0.isEmpty == false }).joined(separator: "")
                 
-                print("text: \(text)")
-                
                 let attStr = NSMutableAttributedString(string: text)
-                
-                print("attStr = \(attStr)")
                 
                 attStr.addAttribute(.foregroundColor, value: UIColor.orange, range: (text as NSString).range(of: searchText))
                 
@@ -271,13 +280,22 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 && !(self.tasks.filter("pinned == true").isEmpty) {
-            let data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+        if !(searchText.isEmpty) {
+            let data = tasks.sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
             presentUpdateMemoViewController(memo: data)
+            print("DATA0: \(data)")
         }
         else {
-            let data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
-            presentUpdateMemoViewController(memo: data)
+            if indexPath.section == 0 && !(self.tasks.filter("pinned == true").isEmpty) {
+                let data = tasks.filter("pinned == true").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+                print("DATA1: \(data)")
+                presentUpdateMemoViewController(memo: data)
+            }
+            else {
+                let data = tasks.filter("pinned == false").sorted(byKeyPath: "writtenDate", ascending: false)[indexPath.row]
+                print("DATA2: \(data)")
+                presentUpdateMemoViewController(memo: data)
+            }
         }
 
         tableView.deselectRow(at: indexPath, animated: true)
@@ -428,6 +446,10 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         print("스크롤")
+        
+        if self.navigationItem.searchController!.searchBar.text!.isEmpty {
+            searching = false
+        }
         self.navigationItem.searchController?.searchBar.resignFirstResponder()
     }
     
@@ -436,7 +458,7 @@ extension MemoListViewController: UITableViewDelegate, UITableViewDataSource {
 
 //MARK: SearchController extension
 
-extension MemoListViewController: UISearchResultsUpdating, UISearchBarDelegate {
+extension MemoListViewController: UISearchResultsUpdating, UISearchBarDelegate, UISearchControllerDelegate {
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text?.lowercased() else {
             return
@@ -446,6 +468,17 @@ extension MemoListViewController: UISearchResultsUpdating, UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        if searchBar.text!.isEmpty {
+            searching = false
+        }
         searchBar.resignFirstResponder()
+    }
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        searching = true
+        return true
+    }
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searching = false
     }
 }
