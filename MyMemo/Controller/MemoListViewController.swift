@@ -477,6 +477,7 @@ extension MemoListViewController: UISearchResultsUpdating, UISearchBarDelegate, 
         return true
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        print("cancel")
         searching = false
     }
     

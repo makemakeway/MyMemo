@@ -17,9 +17,14 @@ extension DateFormatter {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.day, .weekday], from: date, to: Date())
         
+        
+        let writtenDateWeekday = calendar.component(.weekday, from: date)
+        let todayWeekday = calendar.component(.weekday, from: Date())
+        
+        
         if calendar.isDateInToday(date) {
             df.dateFormat = "a hh:mm"
-        } else if components.day! < 7 {
+        } else if components.day! < 7 || writtenDateWeekday > todayWeekday {
             df.dateFormat = "EEEE"
         } else {
             df.dateFormat = "yyyy.MM.dd a HH:mm"

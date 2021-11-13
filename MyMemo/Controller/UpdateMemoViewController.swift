@@ -61,8 +61,6 @@ class UpdateMemoViewController: UIViewController {
             body = content[bodyIndex...].joined(separator: "\n")
         }
         
-        print(title, body)
-        
         var result = [String?]()
         result.append(title)
         result.append(body)
